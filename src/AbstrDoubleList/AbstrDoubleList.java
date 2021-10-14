@@ -3,10 +3,7 @@ package AbstrDoubleList;
 import java.io.Serializable;
 import java.util.Iterator;
 
-/**
- *
- * @author Martin Fryml
- */
+
 public class AbstrDoubleList<T> implements IAbstrDoubleList<T>, Serializable {
 
     private int pocetPrvku = 0;

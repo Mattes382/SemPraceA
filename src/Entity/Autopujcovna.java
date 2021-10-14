@@ -10,6 +10,7 @@ import static Entity.EnumPozice.AKTUALNI;
 import static Entity.EnumPozice.POSLEDNI;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,14 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         this.pocetVypujcenychAut = vypujcenaAuta.pocetPrvku();
 
     }
+
+    public Autopujcovna() {
+        this.pobocky = new AbstrDoubleList<>();
+        this.vypujcenaAuta = new AbstrDoubleList<>();
+        this.pocetPujcovenVSeznamu = 0;
+        this.pocetVypujcenychAut = 0;
+    }
+    
 
     public int getPocetVypujcenychAut() {
         return pocetVypujcenychAut;
@@ -66,12 +75,12 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     @Override
     public void vlozPobocku(IPobocka Pobocka, EnumPozice Pozice) {
-        if (Pobocka != null && !(Pobocka instanceof Pobocka)) {
+        if (Pobocka != null) {
 
             Pobocka pobocka = (Pobocka) Pobocka;
             switch (Pozice) {
                 case PRVNI:
-                    pobocky.vlozPrvni(pobocka); //mame vkladat interface????
+                    pobocky.vlozPrvni(pobocka);
                     break;
                 case POSLEDNI:
                     pobocky.vlozPosledni(pobocka);
@@ -203,7 +212,8 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
                 break;
         }
         int pocetVypujceni = auto.getPocetVypujceni();
-        auto.setPocetVypujceni(pocetVypujceni++);
+        auto.setPocetVypujceni(auto.getPocetVypujceni()+1);
+        auto.setStavKm(auto.getStavKm()+(int)(Math.random()*1000));
         setPocetVypujcenychAut(pocetVypujcenychAut--);
         pobocky.zpristupniAktualni().vlozAuto(auto, POSLEDNI);
         return auto;

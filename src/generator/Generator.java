@@ -113,7 +113,7 @@ public class Generator {
         AbstrDoubleList<Pobocka> p = new AbstrDoubleList<>();
 
         for (int i = 0; i < pocetPobocek; i++) {
-            int nahodnyPocetAut = nahodneCislo(1, 100);
+            int nahodnyPocetAut = nahodneCislo(1, 10);
             p.vlozPosledni(vytvorNahodnouPobocku(nahodnyPocetAut));
         }
         return p;

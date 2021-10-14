@@ -41,6 +41,7 @@ public class Pobocka implements IPobocka, Serializable{
 
     public void setSeznamAut(AbstrDoubleList<Auto> seznamAut) {
         this.seznamAut = seznamAut;
+        this.pocetAutVSeznamu = seznamAut.pocetPrvku();
     }
 
     public int getPocetAutVSeznamu() {

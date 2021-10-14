@@ -18,10 +18,10 @@ import perzistence.Perzistence;
  */
 public class AbstrDoubleListTest {
    
-            private Autopujcovna[] dejPole(AbstrDoubleList<Autopujcovna> instance) {
+            private Pobocka[] dejPole(AbstrDoubleList<Pobocka> instance) {
         int pocet = instance.pocetPrvku();
-        Autopujcovna[] pole = new Autopujcovna[pocet];
-        Iterator<Autopujcovna> iterator = instance.iterator();
+        Pobocka[] pole = new Pobocka[pocet];
+        Iterator<Pobocka> iterator = instance.iterator();
         for (int i = 0; i < pocet; i++) {
             pole[i] = iterator.next();
         }
@@ -32,22 +32,23 @@ public class AbstrDoubleListTest {
    @Test
     public void testVlozZaAktualnim10() throws Exception{
 
-        AbstrDoubleList<Autopujcovna> instance = Generator.generujAutoPujcovny(10);
-        Autopujcovna[] pole = dejPole(instance);
+        Autopujcovna instance = Generator.vytvorNahodnouAutoPujcovnu(10);
+        Pobocka[] pole = dejPole(instance.getPobocky());
            for (int i = 0; i < pole.length; i++) {
-               System.out.println(pole[i].getPocetPujcovenVSeznamu());
+               System.out.println(pole[i]);
            }
-       Perzistence.uloz("kocourek", instance);
+        System.out.println(instance.getPocetVypujcenychAut());
+       Perzistence.uloz("kocourek.bin", instance);
        System.out.println("soubor ulozen");
-       AbstrDoubleList<Autopujcovna> instance2 = Generator.generujAutoPujcovny(1);
+       Autopujcovna instance2;
        
-       Perzistence.nacti("kocourek", instance2);
+       instance2 = Perzistence.nacti("kocourek.bin");
        System.out.println("seznam nacten");
-               Autopujcovna[] pole2 = dejPole(instance);
+       Pobocka[] pole2 = dejPole(instance2.getPobocky());
            for (int i = 0; i < pole2.length; i++) {
-               System.out.println(pole2[i].getPocetPujcovenVSeznamu());
+               System.out.println(pole2[i]);
            }
-
+       System.out.println(instance2.getVypujcenaAuta().pocetPrvku());    
     }
 
 }
