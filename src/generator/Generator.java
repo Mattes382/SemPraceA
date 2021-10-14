@@ -59,8 +59,8 @@ public class Generator {
         Auto vysledek = null;
         int nahodnaHmotnost = nahodneCislo(100, 5000);
         int typDopravnihoProstredku = nahodneCislo(1, 2);
-        int nahodnyPocetVypujceni = nahodneCislo(0, 500);
-        int nahodnyStavKm = nahodnyPocetVypujceni * (1 / nahodneCislo(2, 8));
+        int nahodnyPocetVypujceni = nahodneCislo(0, 100);
+        int nahodnyStavKm = nahodnyPocetVypujceni * nahodneCislo(300, 1000);
 
         switch (typDopravnihoProstredku) {
             case 1:

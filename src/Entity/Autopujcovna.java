@@ -165,7 +165,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
         }
 
-        pobocky.zpristupniAktualni().setPocetAutVSeznamu(pocetPujcovenVSeznamu++);
+        
     }
 
     @Override
@@ -178,7 +178,6 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
     @Override
     public Auto odeberAuto(EnumPozice Pozice) {
         Auto auto = pobocky.zpristupniAktualni().odeberAuto(Pozice);
-        pobocky.zpristupniAktualni().setPocetAutVSeznamu(pocetPujcovenVSeznamu--);
         return auto;
     }
 
@@ -187,7 +186,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         Auto auto = pobocky.zpristupniAktualni().zpristupnAuto(Pozice);
         pobocky.zpristupniAktualni().odeberAuto(Pozice);
         vypujcenaAuta.vlozPrvni(auto);
-        setPocetVypujcenychAut(pocetVypujcenychAut++);
+        pocetVypujcenychAut++;
         return auto;
     }
 
@@ -211,10 +210,9 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
                 auto = vypujcenaAuta.odeberAktualni();
                 break;
         }
-        int pocetVypujceni = auto.getPocetVypujceni();
         auto.setPocetVypujceni(auto.getPocetVypujceni()+1);
         auto.setStavKm(auto.getStavKm()+(int)(Math.random()*1000));
-        setPocetVypujcenychAut(pocetVypujcenychAut--);
+        pocetVypujcenychAut--;
         pobocky.zpristupniAktualni().vlozAuto(auto, POSLEDNI);
         return auto;
     }

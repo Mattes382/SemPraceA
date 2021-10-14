@@ -124,6 +124,7 @@ public class Pobocka implements IPobocka, Serializable{
                 auto = seznamAut.odeberAktualni();
                 break;
         }
+        pocetAutVSeznamu--;
         return auto;
     }
 

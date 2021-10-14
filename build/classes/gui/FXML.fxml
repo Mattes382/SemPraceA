@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" minWidth="1400.0" prefHeight="589.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.FXMLController">
+<AnchorPane id="AnchorPane" minWidth="1400.0" prefHeight="600.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.FXMLController">
    <children>
       <GridPane prefHeight="554.0" prefWidth="854.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -26,9 +26,14 @@
          <children>
             <VBox alignment="TOP_CENTER" prefHeight="482.0" prefWidth="797.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <children>
-                  <Button fx:id="generuj" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#generuj" prefWidth="120.0" text="Generuj">
+                  <Button fx:id="generuj" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#generuj" prefWidth="120.0" text="Generuj pob.">
                      <VBox.margin>
                         <Insets top="20.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="generujAuta" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#generujAuta" prefWidth="120.0" text="Generuj auta">
+                     <VBox.margin>
+                        <Insets top="10.0" />
                      </VBox.margin>
                   </Button>
                   <Button fx:id="zrus" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#zrus" prefWidth="120.0" text="Zruš">
@@ -81,7 +86,7 @@
                         <Insets top="30.0" />
                      </VBox.margin>
                   </Button>
-                  <Button fx:id="odeberPobocku" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#odeberPobocku" prefWidth="120.0" text="Odeber pobočku">
+                  <Button fx:id="odeberPobocku" alignment="CENTER" contentDisplay="CENTER" minWidth="120.0" mnemonicParsing="false" onAction="#odeberPobocku" prefWidth="120.0" text="Odeber pob.">
                      <VBox.margin>
                         <Insets top="10.0" />
                      </VBox.margin>

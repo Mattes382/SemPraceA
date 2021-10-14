@@ -16,7 +16,9 @@ import generator.Generator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -26,9 +28,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.ImageView;
+import javafx.util.Pair;
 import perzistence.Perzistence;
 
 /**
@@ -50,10 +59,11 @@ public class FXMLController implements Initializable {
     private final ObservableList<Auto> autaObsList;
     private final ObservableList<Auto> vypAutaObsList;
     private TextInputDialog dialog = new TextInputDialog();
+    private ChoiceDialog<String> choice = new ChoiceDialog<>("Osobní auto", "Osobní auto", "Užitkové auto");
     private Optional<String> result;
 
     Autopujcovna autopujcovna = new Autopujcovna();
-    String jmenoSouboru = "kocourek.bin";
+    String jmenoSouboru = "zaloha.bin";
 
     public FXMLController() {
         this.autaObsList = FXCollections.observableArrayList();
@@ -137,8 +147,15 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void generuj(ActionEvent event) {
-        IPobocka p = Generator.vytvorNahodnouPobocku(10);
+        IPobocka p = Generator.vytvorNahodnouPobocku(Generator.nahodneCislo(1, 10));
         autopujcovna.vlozPobocku(p, EnumPozice.POSLEDNI);
+        zobrazitPobocky();
+    }
+
+    @FXML
+    private void generujAuta(ActionEvent event) {
+        Auto auto = Generator.vytvorNahodneAuto();
+        autopujcovna.vlozAuto(auto, EnumPozice.POSLEDNI);
         zobrazitPobocky();
     }
 
@@ -173,35 +190,63 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void vypujcAuto(ActionEvent event) {
-        autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
-        zobrazitPobocky();
+        if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
+            autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
+            zobrazitPobocky();
+        }
     }
 
     @FXML
     private void vratAuto(ActionEvent event) {
-        autopujcovna.vratAuto(EnumPozice.AKTUALNI);
-        zobrazitPobocky();
+
+        if (autopujcovna.getPocetVypujcenychAut() != 0) {
+            autopujcovna.vratAuto(EnumPozice.AKTUALNI);
+            zobrazitPobocky();
+        }
+
     }
 
     @FXML
     private void odeberAuto(ActionEvent event) {
         autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI).odeberAuto(EnumPozice.AKTUALNI);
-        zobrazit();
+        zobrazitPobocky();
     }
 
     @FXML
     private void vlozAuto(ActionEvent event) {
+        if (!(autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) == null)) {
+            choice.setTitle("Výběr auta");
+            choice.setContentText("Vyberte si typ auta:");
+
+            Optional<String> result = choice.showAndWait();
+            result.ifPresent(auto -> {
+                if (auto.startsWith("O")) {
+                    OsobniAutoDialog.pridej(autopujcovna);
+
+                } else {
+                    UzitkoveAutoDialog.pridej(autopujcovna);
+                }
+                zobrazitPobocky();
+            });
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Chyba");
+            alert.setContentText("Auto potřebuje pobočku!");
+
+            alert.showAndWait();
+        }
+
     }
 
     @FXML
     private void vlozPobocku(ActionEvent event) {
-         dialog.setHeaderText("Zadejte jméno pobočky");
+        dialog.setHeaderText("Zadejte jméno pobočky");
         result = dialog.showAndWait();
         result.ifPresent(jmenoPobocky -> {
-            if(!jmenoPobocky.isEmpty()){
-            Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrDoubleList<Auto>());
-            autopujcovna.vlozPobocku(pobocka, EnumPozice.PRVNI);
-            zobrazitPobocky();
+            if (!jmenoPobocky.isEmpty()) {
+                Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrDoubleList<Auto>());
+                autopujcovna.vlozPobocku(pobocka, EnumPozice.POSLEDNI);
+                zobrazitPobocky();
             }
 
         });
@@ -287,4 +332,5 @@ public class FXMLController implements Initializable {
         setSelectedVypAuta();
 
     }
+
 }
