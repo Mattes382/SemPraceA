@@ -10,7 +10,6 @@ import static Entity.EnumPozice.AKTUALNI;
 import static Entity.EnumPozice.POSLEDNI;
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -147,6 +146,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
                 pobocka = pobocky.odeberAktualni();
                 break;
         }
+        pocetPujcovenVSeznamu--;
         return pobocka;
     }
 
@@ -170,9 +170,12 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     @Override
     public Auto zpristupnAuto(EnumPozice Pozice) {
-        Auto auto = pobocky.zpristupniAktualni().zpristupnAuto(Pozice);
-
+        Auto auto = null;
+        if(pobocky.zpristupniAktualni() != null){
+        auto = pobocky.zpristupniAktualni().zpristupnAuto(Pozice);
+        }
         return auto;
+    
     }
 
     @Override
@@ -245,7 +248,9 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         Iterator iterator = null;
         switch (typ) {
             case AUTA:
+                if(pobocky.zpristupniAktualni() != null){
                 iterator = pobocky.zpristupniAktualni().iterator();
+                }
                 break;
             case POBOCKY:
                 iterator = pobocky.iterator();
@@ -260,7 +265,10 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     @Override
     public void zrusPobocku() {
-        pobocky.zpristupniAktualni().zrus();
+        if(pobocky.zpristupniAktualni() != null){
+            pobocky.zpristupniAktualni().zrus();
+        }
+        
     }
 
     @Override

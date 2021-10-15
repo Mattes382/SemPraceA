@@ -3,7 +3,6 @@ package AbstrDoubleList;
 import java.io.Serializable;
 import java.util.Iterator;
 
-
 public class AbstrDoubleList<T> implements IAbstrDoubleList<T>, Serializable {
 
     private int pocetPrvku = 0;
@@ -11,7 +10,7 @@ public class AbstrDoubleList<T> implements IAbstrDoubleList<T>, Serializable {
     private Prvek aktualni;
     private Prvek posledni;
 
-    public class Prvek implements Serializable { //vnitrni trida
+    public class Prvek implements Serializable {
 
         public T data;
         public Prvek predchozi;
@@ -316,7 +315,7 @@ public class AbstrDoubleList<T> implements IAbstrDoubleList<T>, Serializable {
 
             @Override
             public T next() {
-                
+
                 T data = akt.data;
                 akt = akt.nasledujici;
 

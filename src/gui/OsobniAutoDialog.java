@@ -5,12 +5,10 @@
  */
 package gui;
 
-import Entity.Auto;
 import Entity.Autopujcovna;
 import Entity.Barva;
 import Entity.EnumPozice;
 import Entity.OsobniAuto;
-import Entity.Pobocka;
 import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,11 +19,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.util.Pair;
 
 /**
  *

@@ -5,12 +5,9 @@
  */
 package perzistence;
 
-import AbstrDoubleList.AbstrDoubleList;
 import Entity.Auto;
 import Entity.Autopujcovna;
 import Entity.EnumPozice;
-import Entity.IAutopujcovna;
-import Entity.IPobocka;
 import Entity.Pobocka;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,8 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Iterator;
-import java.util.Objects;
 
 /**
  *
@@ -45,7 +40,7 @@ public class Perzistence {
 
             os.close();
         } catch (IOException ex) {
-            System.out.println("Chyba behem ukladani");
+            System.out.println("Chyba během ukládání");
             System.out.println(ex);
         }
 

@@ -16,9 +16,7 @@ import generator.Generator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -28,16 +26,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.ImageView;
-import javafx.util.Pair;
 import perzistence.Perzistence;
 
 /**
@@ -79,17 +72,6 @@ public class FXMLController implements Initializable {
         // TODO
     }
 
-    /*
-            listView.getItems().clear();
-        Iterator<DopravniProstredek> iterator = sp.iterator();
-        while (iterator.hasNext()) {
-            listProstredku.add(iterator.next());
-        }
-        listView.setItems(listProstredku);
-    
-    
-    
-     */
     private void obnovitListy() {
         listPobocek.getItems().clear();
         pobockyObsList.clear();
@@ -111,19 +93,6 @@ public class FXMLController implements Initializable {
         while (iteratorVypAuta.hasNext()) {
             vypAutaObsList.add(iteratorVypAuta.next());
         }
-
-//        for (Pobocka pob : autopujcovna.getPobocky()) {
-//
-//            for (Auto auto : pob.getSeznamAut()) {
-//                autaObsList.add(auto);
-//            }
-//            pobockyObsList.add(pob);
-//
-//        }
-//
-//        for (Auto auto : autopujcovna.getVypujcenaAuta()) {
-//            vypAutaObsList.add(auto);
-//        }
 
         listAut.setItems(autaObsList);
         listPobocek.setItems(pobockyObsList);
@@ -179,9 +148,12 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void generujAuta(ActionEvent event) {
-        Auto auto = Generator.vytvorNahodneAuto();
-        autopujcovna.vlozAuto(auto, EnumPozice.POSLEDNI);
-        obnovitListy();
+        if (autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) != null) {
+            Auto auto = Generator.vytvorNahodneAuto();
+            autopujcovna.vlozAuto(auto, EnumPozice.POSLEDNI);
+            obnovitListy();
+        }
+
     }
 
     @FXML
@@ -221,10 +193,21 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void vypujcAuto(ActionEvent event) {
-        if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
-            autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
-            obnovitListy();
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Chyba");
+        if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
+            if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
+                autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
+                obnovitListy();
+            } else {
+                alert.setContentText("Pobočka nemá žádné auta!");
+                alert.showAndWait();
+            }
+        } else {
+            alert.setContentText("V autopůjčovně není žádná pobočka!");
+            alert.showAndWait();
         }
+
     }
 
     @FXML
@@ -239,8 +222,21 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void odeberAuto(ActionEvent event) {
-        autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI).odeberAuto(EnumPozice.AKTUALNI);
-        obnovitListy();
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Chyba");
+        if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
+            if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
+                autopujcovna.odeberAuto(EnumPozice.AKTUALNI);
+                obnovitListy();
+            } else {
+
+                alert.setContentText("Pobočka nemá žádné auta!");
+                alert.showAndWait();
+            }
+        } else {
+            alert.setContentText("V autopůjčovně není žádná pobočka!");
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -285,8 +281,17 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void odeberPobocku(ActionEvent event) {
-        autopujcovna.odeberPobocku(EnumPozice.AKTUALNI);
-        obnovitListy();
+        if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
+            autopujcovna.odeberPobocku(EnumPozice.AKTUALNI);
+            obnovitListy();
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Chyba");
+            alert.setContentText("Autopůjčovna nemá žádně pobočky!");
+
+            alert.showAndWait();
+        }
+
     }
 
     @FXML
