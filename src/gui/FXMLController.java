@@ -79,7 +79,18 @@ public class FXMLController implements Initializable {
         // TODO
     }
 
-    private void zobrazitPobocky() {
+    /*
+            listView.getItems().clear();
+        Iterator<DopravniProstredek> iterator = sp.iterator();
+        while (iterator.hasNext()) {
+            listProstredku.add(iterator.next());
+        }
+        listView.setItems(listProstredku);
+    
+    
+    
+     */
+    private void obnovitListy() {
         listPobocek.getItems().clear();
         pobockyObsList.clear();
         listAut.getItems().clear();
@@ -87,18 +98,32 @@ public class FXMLController implements Initializable {
         listVypujcenychAut.getItems().clear();
         vypAutaObsList.clear();
 
-        for (Pobocka pob : autopujcovna.getPobocky()) {
+        Iterator<Pobocka> iteratorPobocky = autopujcovna.iterator(eTyp.POBOCKY);
+        Iterator<Auto> iteratorAuta = autopujcovna.iterator(eTyp.AUTA);
+        Iterator<Auto> iteratorVypAuta = autopujcovna.iterator(eTyp.VYPUJCENE_AUTA);
 
-            for (Auto auto : pob.getSeznamAut()) {
-                autaObsList.add(auto);
+        while (iteratorPobocky.hasNext()) {
+            while (iteratorAuta.hasNext()) {
+                autaObsList.add(iteratorAuta.next());
             }
-            pobockyObsList.add(pob);
-
+            pobockyObsList.add(iteratorPobocky.next());
+        }
+        while (iteratorVypAuta.hasNext()) {
+            vypAutaObsList.add(iteratorVypAuta.next());
         }
 
-        for (Auto auto : autopujcovna.getVypujcenaAuta()) {
-            vypAutaObsList.add(auto);
-        }
+//        for (Pobocka pob : autopujcovna.getPobocky()) {
+//
+//            for (Auto auto : pob.getSeznamAut()) {
+//                autaObsList.add(auto);
+//            }
+//            pobockyObsList.add(pob);
+//
+//        }
+//
+//        for (Auto auto : autopujcovna.getVypujcenaAuta()) {
+//            vypAutaObsList.add(auto);
+//        }
 
         listAut.setItems(autaObsList);
         listPobocek.setItems(pobockyObsList);
@@ -149,21 +174,27 @@ public class FXMLController implements Initializable {
     private void generuj(ActionEvent event) {
         IPobocka p = Generator.vytvorNahodnouPobocku(Generator.nahodneCislo(1, 10));
         autopujcovna.vlozPobocku(p, EnumPozice.POSLEDNI);
-        zobrazitPobocky();
+        obnovitListy();
     }
 
     @FXML
     private void generujAuta(ActionEvent event) {
         Auto auto = Generator.vytvorNahodneAuto();
         autopujcovna.vlozAuto(auto, EnumPozice.POSLEDNI);
-        zobrazitPobocky();
+        obnovitListy();
     }
 
     @FXML
     private void zrus(ActionEvent event) {
         autopujcovna.zrus();
+        obnovitListy();
 
-        zobrazitPobocky();
+    }
+
+    @FXML
+    private void zrusAuta(ActionEvent event) {
+        autopujcovna.zrusPobocku();
+        obnovitListy();
 
     }
 
@@ -171,7 +202,7 @@ public class FXMLController implements Initializable {
     private void nacti(ActionEvent event) throws FileNotFoundException {
         try {
             autopujcovna = Perzistence.nacti(jmenoSouboru);
-            zobrazitPobocky();
+            obnovitListy();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -192,7 +223,7 @@ public class FXMLController implements Initializable {
     private void vypujcAuto(ActionEvent event) {
         if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
             autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
-            zobrazitPobocky();
+            obnovitListy();
         }
     }
 
@@ -201,7 +232,7 @@ public class FXMLController implements Initializable {
 
         if (autopujcovna.getPocetVypujcenychAut() != 0) {
             autopujcovna.vratAuto(EnumPozice.AKTUALNI);
-            zobrazitPobocky();
+            obnovitListy();
         }
 
     }
@@ -209,7 +240,7 @@ public class FXMLController implements Initializable {
     @FXML
     private void odeberAuto(ActionEvent event) {
         autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI).odeberAuto(EnumPozice.AKTUALNI);
-        zobrazitPobocky();
+        obnovitListy();
     }
 
     @FXML
@@ -226,7 +257,7 @@ public class FXMLController implements Initializable {
                 } else {
                     UzitkoveAutoDialog.pridej(autopujcovna);
                 }
-                zobrazitPobocky();
+                obnovitListy();
             });
         } else {
             Alert alert = new Alert(AlertType.WARNING);
@@ -246,7 +277,7 @@ public class FXMLController implements Initializable {
             if (!jmenoPobocky.isEmpty()) {
                 Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrDoubleList<Auto>());
                 autopujcovna.vlozPobocku(pobocka, EnumPozice.POSLEDNI);
-                zobrazitPobocky();
+                obnovitListy();
             }
 
         });
@@ -255,7 +286,7 @@ public class FXMLController implements Initializable {
     @FXML
     private void odeberPobocku(ActionEvent event) {
         autopujcovna.odeberPobocku(EnumPozice.AKTUALNI);
-        zobrazitPobocky();
+        obnovitListy();
     }
 
     @FXML

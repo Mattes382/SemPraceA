@@ -260,7 +260,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     @Override
     public void zrusPobocku() {
-        pobocky.odeberAktualni();
+        pobocky.zpristupniAktualni().zrus();
     }
 
     @Override
