@@ -127,7 +127,7 @@ public class UzitkoveAutoDialog {
 
         result.ifPresent(vysledek -> {
             
-            ap.vlozAuto(new UzitkoveAuto(vysledek.nosnost, vysledek.hmotnost, vysledek.spz, vysledek.stavKm, vysledek.pocetVypujceni), EnumPozice.NASLEDNIK);
+            ap.vlozAuto(new UzitkoveAuto(vysledek.nosnost, vysledek.hmotnost, vysledek.spz, vysledek.stavKm, vysledek.pocetVypujceni));
             
         });
        

@@ -1,4 +1,4 @@
-package AbstrDoubleList;
+package struktury;
 
 import java.util.Iterator;
 

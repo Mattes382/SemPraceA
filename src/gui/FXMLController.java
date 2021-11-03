@@ -5,7 +5,7 @@
  */
 package gui;
 
-import AbstrDoubleList.AbstrDoubleList;
+import struktury.AbstrDoubleList;
 import Entity.Auto;
 import Entity.Autopujcovna;
 import Entity.EnumPozice;
@@ -30,8 +30,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import perzistence.Perzistence;
+import struktury.AbstrTable;
+import struktury.eTypProhl;
 
 /**
  * FXML Controller class
@@ -47,6 +50,8 @@ public class FXMLController implements Initializable {
     private ListView<Auto> listAut;
     @FXML
     private ListView<Auto> listVypujcenychAut;
+    @FXML
+    private TextField vyhledavaciTextField;
 
     private final ObservableList<IPobocka> pobockyObsList;
     private final ObservableList<Auto> autaObsList;
@@ -110,7 +115,7 @@ public class FXMLController implements Initializable {
     }
 
     private void setSelectedAuta() {
-        Auto aktualni = autopujcovna.zpristupnAuto(EnumPozice.AKTUALNI);
+        Auto aktualni = autopujcovna.zpristupnAuto(); // doopravit
         if (aktualni != null) {
             listAut.getSelectionModel().select(aktualni);
         }
@@ -128,11 +133,16 @@ public class FXMLController implements Initializable {
             listAut.getItems().clear();
             Pobocka aktualniPob = autopujcovna.getPobocky().zpristupniAktualni();
 
-            for (Auto auto : aktualniPob.getSeznamAut()) {
-                listAut.getItems().add(auto);
+            Iterator<Auto> it = aktualniPob.iterator();
+
+            while (it.hasNext()) {
+                listAut.getItems().add(it.next());
             }
 
-            Auto aktAuto = aktualniPob.getSeznamAut().zpristupniAktualni();
+//            for (Auto auto : aktualniPob.getSeznamAut()) {
+//                listAut.getItems().add(auto);
+//            }
+            Auto aktAuto = autopujcovna.zpristupnAuto(); //musim dodelat aktualniPob.getSeznamAut().zpristupniAktualni();
             if (aktAuto != null) {
                 listAut.getSelectionModel().select(aktAuto);
             }
@@ -150,7 +160,7 @@ public class FXMLController implements Initializable {
     private void generujAuta(ActionEvent event) {
         if (autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) != null) {
             Auto auto = Generator.vytvorNahodneAuto();
-            autopujcovna.vlozAuto(auto, EnumPozice.POSLEDNI);
+            autopujcovna.vlozAuto(auto);
             obnovitListy();
         }
 
@@ -197,7 +207,7 @@ public class FXMLController implements Initializable {
         alert.setTitle("Chyba");
         if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
             if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
-                autopujcovna.vypujcAuto(EnumPozice.AKTUALNI);
+                autopujcovna.vypujcAuto();
                 obnovitListy();
             } else {
                 alert.setContentText("Pobočka nemá žádné auta!");
@@ -226,7 +236,7 @@ public class FXMLController implements Initializable {
         alert.setTitle("Chyba");
         if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
             if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
-                autopujcovna.odeberAuto(EnumPozice.AKTUALNI);
+                autopujcovna.odeberAuto();
                 obnovitListy();
             } else {
 
@@ -271,7 +281,7 @@ public class FXMLController implements Initializable {
         result = dialog.showAndWait();
         result.ifPresent(jmenoPobocky -> {
             if (!jmenoPobocky.isEmpty()) {
-                Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrDoubleList<Auto>());
+                Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrTable<String, Auto>());
                 autopujcovna.vlozPobocku(pobocka, EnumPozice.POSLEDNI);
                 obnovitListy();
             }
@@ -319,30 +329,6 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    private void prvniAuta(ActionEvent event) {
-        autopujcovna.zpristupnAuto(EnumPozice.PRVNI);
-        setSelectedAuta();
-    }
-
-    @FXML
-    private void predchoziAuta(ActionEvent event) {
-        autopujcovna.zpristupnAuto(EnumPozice.PREDCHUDCE);
-        setSelectedAuta();
-    }
-
-    @FXML
-    private void dalsiAuta(ActionEvent event) {
-        autopujcovna.zpristupnAuto(EnumPozice.NASLEDNIK);
-        setSelectedAuta();
-    }
-
-    @FXML
-    private void posledniAuta(ActionEvent event) {
-        autopujcovna.zpristupnAuto(EnumPozice.POSLEDNI);
-        setSelectedAuta();
-    }
-
-    @FXML
     private void prvniVypujcenaAuta(ActionEvent event) {
         autopujcovna.zpristupniVypujceneAuto(EnumPozice.PRVNI);
         setSelectedVypAuta();
@@ -367,6 +353,56 @@ public class FXMLController implements Initializable {
         autopujcovna.zpristupniVypujceneAuto(EnumPozice.POSLEDNI);
         setSelectedVypAuta();
 
+    }
+
+    @FXML
+    private void hledat(ActionEvent event) {
+        Auto hledaneAuto = autopujcovna.hledejAuto(vyhledavaciTextField.getText());
+
+        if (hledaneAuto == null) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Hledání auta v autopůjčovně");
+            alert.setContentText("Auto nebylo nalezeno...");
+
+            alert.showAndWait();
+        }
+
+        setSelected();
+        setSelectedAuta();
+
+    }
+
+    @FXML
+    private void hledatVPobocce(ActionEvent event) {
+        if(autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) != null){
+        Auto hledaneAuto = autopujcovna.hledejAutoVPobocce(vyhledavaciTextField.getText());
+
+        if (hledaneAuto == null) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Hledání auta v pobočce");
+            alert.setContentText("Auto nebylo nalezeno...");
+
+            alert.showAndWait();
+        }
+
+        setSelectedAuta();
+        }
+    }
+
+    @FXML
+    private void odeberAutoKlic(ActionEvent event) {
+                Auto hledaneAuto = autopujcovna.odeberAutoPodleKlice(vyhledavaciTextField.getText());
+
+        if (hledaneAuto == null) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Hledání auta v autopůjčovně");
+            alert.setContentText("Auto nebylo nalezeno...");
+
+            alert.showAndWait();
+        }
+
+        setSelected();
+        setSelectedAuta();
     }
 
 }

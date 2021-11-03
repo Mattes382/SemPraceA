@@ -26,16 +26,16 @@ public interface IAutopujcovna{
 
     /* - odebere pobočku
     z požadované pozice (první, poslední, předchůdce, následník, aktuální),*/
-    void vlozAuto(Auto auto, EnumPozice Pozice);
+    void vlozAuto(Auto auto);
 
     /*  - vloží nové auto do 
     seznamu aktuální pobočky na příslušnou pozici (první, poslední, předchůdce, následník)*/
-    Auto zpristupnAuto(EnumPozice Pozice); // - zpřístupní auto z požadované 
+    Auto zpristupnAuto(); // - zpřístupní auto z požadované 
 
     /*pozice aktuální pobočky (první, poslední, předchůdce, následník, aktuální),*/
-    Auto odeberAuto(EnumPozice Pozice);//- odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    Auto odeberAuto();//- odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
 
-    Auto vypujcAuto(EnumPozice Pozice);/* - odebere auto z požadované pozice aktuální pobočky a vloží ho do seznamu výpůjček (první, poslední, předchůdce, 
+    Auto vypujcAuto();/* - odebere auto z požadované pozice aktuální pobočky a vloží ho do seznamu výpůjček (první, poslední, předchůdce, 
     následník, aktuální),*/
 
     Auto vratAuto(EnumPozice Pozice);/* - odebere auto z požadované pozice výpůjček a vloží ho do seznamu aktuální pobočky (první, poslední, předchůdce, následník, 

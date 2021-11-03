@@ -5,13 +5,14 @@
  */
 package Entity;
 
-import AbstrDoubleList.AbstrDoubleList;
+import struktury.AbstrDoubleList;
 import static Entity.EnumPozice.AKTUALNI;
 import static Entity.EnumPozice.POSLEDNI;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import struktury.AbstrTable;
 
 /**
  *
@@ -21,6 +22,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     private AbstrDoubleList<Pobocka> pobocky;
     private AbstrDoubleList<Auto> vypujcenaAuta;
+    private Auto hledaneAuto = null;
     private int pocetPujcovenVSeznamu;
     private int pocetVypujcenychAut;
 
@@ -38,7 +40,6 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         this.pocetPujcovenVSeznamu = 0;
         this.pocetVypujcenychAut = 0;
     }
-    
 
     public int getPocetVypujcenychAut() {
         return pocetVypujcenychAut;
@@ -151,43 +152,81 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
     }
 
     @Override
-    public void vlozAuto(Auto auto, EnumPozice Pozice) {
+    public void vlozAuto(Auto auto) {
         if (auto != null) {
-            if (Pozice == AKTUALNI) {
-                try {
-                    throw new Exception("Auto nelze vložit na aktuální místo");
-                } catch (Exception ex) {
-                    Logger.getLogger(Pobocka.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                pobocky.zpristupniAktualni().vlozAuto(auto, Pozice);
+            pobocky.zpristupniAktualni().vlozAuto(auto);
+        }
+
+    }
+// tohle vsechno nejak prenyst do pobocky aby to davalo smysl a nebylo to napatlany v autopujcovne
+
+    public Auto hledejAutoVPobocce(String spz) {
+        Pobocka akt = pobocky.zpristupniAktualni();
+        AbstrTable<String, Auto> seznamAut = akt.getSeznamAut();
+        Auto tmp = seznamAut.najdi(spz);
+        if (tmp != null) {
+            this.hledaneAuto = tmp;
+            return hledaneAuto;
+        } else {
+            return null;
+        }
+    }
+
+    public Auto hledejAuto(String spz) {
+        Iterator<Pobocka> it = pobocky.iterator();
+        Pobocka tmpPobocka = pobocky.zpristupniAktualni();
+        pobocky.zpristupniPrvni();
+        while (it.hasNext()) {
+            Pobocka akt = it.next();
+            AbstrTable<String, Auto> seznamAut = akt.getSeznamAut();
+            Auto tmpAuto = seznamAut.najdi(spz);
+            if (tmpAuto != null) {
+                this.hledaneAuto = tmpAuto;
+                return hledaneAuto;
             }
-
+            pobocky.zpristupniNaslednika();
         }
-
-        
+        it = pobocky.iterator();
+        pobocky.zpristupniPrvni();
+        while (it.hasNext()) {
+            if (tmpPobocka == it.next()) {
+                break;
+            } else {
+                pobocky.zpristupniNaslednika();
+            }
+        }
+        return null;
     }
-
-    @Override
-    public Auto zpristupnAuto(EnumPozice Pozice) {
-        Auto auto = null;
-        if(pobocky.zpristupniAktualni() != null){
-        auto = pobocky.zpristupniAktualni().zpristupnAuto(Pozice);
-        }
-        return auto;
     
+    public Auto odeberAutoPodleKlice(String spz){
+        Auto auto = hledejAuto(spz);
+        if(auto != null){
+           odeberAuto();
+           return auto;
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public Auto odeberAuto(EnumPozice Pozice) {
-        Auto auto = pobocky.zpristupniAktualni().odeberAuto(Pozice);
+    public Auto zpristupnAuto() {
+        return hledaneAuto;
+
+    }
+
+    @Override
+    public Auto odeberAuto() { // odebere vybrane auto
+        Auto auto = null;
+        Pobocka akt = pobocky.zpristupniAktualni();
+        AbstrTable<String, Auto> seznamAut = akt.getSeznamAut();
+        auto = seznamAut.odeber(hledaneAuto.getSpz());
         return auto;
     }
 
     @Override
-    public Auto vypujcAuto(EnumPozice Pozice) {
-        Auto auto = pobocky.zpristupniAktualni().zpristupnAuto(Pozice);
-        pobocky.zpristupniAktualni().odeberAuto(Pozice);
+    public Auto vypujcAuto() {
+        Auto auto = hledaneAuto;
+        pobocky.zpristupniAktualni().odeberAuto(); // presne o tomhle mluvim
         vypujcenaAuta.vlozPrvni(auto);
         pocetVypujcenychAut++;
         return auto;
@@ -213,10 +252,10 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
                 auto = vypujcenaAuta.odeberAktualni();
                 break;
         }
-        auto.setPocetVypujceni(auto.getPocetVypujceni()+1);
-        auto.setStavKm(auto.getStavKm()+(int)(Math.random()*1000));
+        auto.setPocetVypujceni(auto.getPocetVypujceni() + 1);
+        auto.setStavKm(auto.getStavKm() + (int) (Math.random() * 1000));
         pocetVypujcenychAut--;
-        pobocky.zpristupniAktualni().vlozAuto(auto, POSLEDNI);
+        pobocky.zpristupniAktualni().vlozAuto(auto);
         return auto;
     }
 
@@ -248,8 +287,8 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         Iterator iterator = null;
         switch (typ) {
             case AUTA:
-                if(pobocky.zpristupniAktualni() != null){
-                iterator = pobocky.zpristupniAktualni().iterator();
+                if (pobocky.zpristupniAktualni() != null) {
+                    iterator = pobocky.zpristupniAktualni().iterator();
                 }
                 break;
             case POBOCKY:
@@ -265,10 +304,10 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     @Override
     public void zrusPobocku() {
-        if(pobocky.zpristupniAktualni() != null){
+        if (pobocky.zpristupniAktualni() != null) {
             pobocky.zpristupniAktualni().zrus();
         }
-        
+
     }
 
     @Override
@@ -282,10 +321,5 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
     public String toString() {
         return "Autopujcovna";
     }
-
-
-
-
-
 
 }

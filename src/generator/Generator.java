@@ -5,7 +5,7 @@
  */
 package generator;
 
-import AbstrDoubleList.AbstrDoubleList;
+import struktury.AbstrDoubleList;
 import Entity.Auto;
 import Entity.Autopujcovna;
 import Entity.Barva;
@@ -13,6 +13,7 @@ import Entity.OsobniAuto;
 import Entity.Pobocka;
 import Entity.UzitkoveAuto;
 import java.util.Random;
+import struktury.AbstrTable;
 
 /**
  *
@@ -96,18 +97,18 @@ public class Generator {
 
     public static Pobocka vytvorNahodnouPobocku(int pocetAut) {
         String nahodneJmenoPobocky = nazvyPobocek[nahodneCislo(0, nazvyPobocek.length - 1)];
-        AbstrDoubleList<Auto> auta = generujAuta(pocetAut);
+        AbstrTable<String, Auto> auta = generujAuta(pocetAut);
         Pobocka pobocka = new Pobocka(nahodneJmenoPobocky, auta);
         return pobocka;
     }
     
-    public static Autopujcovna vytvorNahodnouAutoPujcovnu(int pocetPobocek){
-        AbstrDoubleList<Pobocka> pobocky = generujPobocky(pocetPobocek);
-        int nahodnyPocetAut = nahodneCislo(1, 25);
-        AbstrDoubleList<Auto> vypujcenaAuta = generujAuta(nahodnyPocetAut);
-        Autopujcovna autopujcovna = new Autopujcovna(pobocky, vypujcenaAuta);
-        return autopujcovna;
-    }
+//    public static Autopujcovna vytvorNahodnouAutoPujcovnu(int pocetPobocek){
+//        AbstrDoubleList<Pobocka> pobocky = generujPobocky(pocetPobocek);
+//        int nahodnyPocetAut = nahodneCislo(1, 25);
+//        AbstrDoubleList<Auto> vypujcenaAuta = generujAuta(nahodnyPocetAut);
+//        Autopujcovna autopujcovna = new Autopujcovna(pobocky, vypujcenaAuta);
+//        return autopujcovna;
+//    }
 
     public static AbstrDoubleList<Pobocka> generujPobocky(int pocetPobocek) {
         AbstrDoubleList<Pobocka> p = new AbstrDoubleList<>();
@@ -119,20 +120,21 @@ public class Generator {
         return p;
     }
     
-        public static AbstrDoubleList<Autopujcovna> generujAutoPujcovny(int pocetAutoPujcoven) {
-        AbstrDoubleList<Autopujcovna> ap = new AbstrDoubleList<>();
+//        public static AbstrDoubleList<Autopujcovna> generujAutoPujcovny(int pocetAutoPujcoven) {
+//        AbstrDoubleList<Autopujcovna> ap = new AbstrDoubleList<>();
+//
+//        for (int i = 0; i < pocetAutoPujcoven; i++) {
+//            int nahodnyPocetPobocek = nahodneCislo(1, 14);
+//            ap.vlozPosledni(vytvorNahodnouAutoPujcovnu(nahodnyPocetPobocek));
+//        }
+//        return ap;
+//    }
 
-        for (int i = 0; i < pocetAutoPujcoven; i++) {
-            int nahodnyPocetPobocek = nahodneCislo(1, 14);
-            ap.vlozPosledni(vytvorNahodnouAutoPujcovnu(nahodnyPocetPobocek));
-        }
-        return ap;
-    }
-
-    public static AbstrDoubleList<Auto> generujAuta(int pocetAut) {
-        AbstrDoubleList<Auto> a = new AbstrDoubleList<>();
+    public static AbstrTable<String, Auto> generujAuta(int pocetAut) {
+        AbstrTable<String, Auto> a = new AbstrTable<>();
         for (int i = 0; i < pocetAut; i++) {
-            a.vlozPosledni(vytvorNahodneAuto());
+            Auto tmp = vytvorNahodneAuto();
+            a.vloz(tmp.getSpz(), tmp);
         }
         return a;
     }

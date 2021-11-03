@@ -5,11 +5,14 @@
  */
 package Entity;
 
-import AbstrDoubleList.AbstrDoubleList;
+import struktury.AbstrDoubleList;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import struktury.AbstrTable;
+import struktury.IAbstrTable;
+import struktury.eTypProhl;
 
 /**
  *
@@ -18,10 +21,10 @@ import java.util.logging.Logger;
 public class Pobocka implements IPobocka, Serializable{
 
     private String jmenoPobocky;
-    private AbstrDoubleList<Auto> seznamAut;
+    private AbstrTable<String, Auto> seznamAut = new AbstrTable<>();
     private int pocetAutVSeznamu;
 
-    public Pobocka(String jmenoPobocky, AbstrDoubleList<Auto> seznamAut) {
+    public Pobocka(String jmenoPobocky, AbstrTable<String, Auto> seznamAut) {
         this.jmenoPobocky = jmenoPobocky;
         this.seznamAut = seznamAut;
         this.pocetAutVSeznamu = seznamAut.pocetPrvku();
@@ -35,11 +38,11 @@ public class Pobocka implements IPobocka, Serializable{
         this.jmenoPobocky = jmenoPobocky;
     }
 
-    public AbstrDoubleList<Auto> getSeznamAut() {
+    public AbstrTable<String, Auto> getSeznamAut() {
         return seznamAut;
     }
 
-    public void setSeznamAut(AbstrDoubleList<Auto> seznamAut) {
+    public void setSeznamAut(AbstrTable<String, Auto> seznamAut) {
         this.seznamAut = seznamAut;
         this.pocetAutVSeznamu = seznamAut.pocetPrvku();
     }
@@ -53,84 +56,30 @@ public class Pobocka implements IPobocka, Serializable{
     }
 
     @Override
-    public void vlozAuto(Auto auto, EnumPozice Pozice) {
-        if (auto != null) {
-            switch (Pozice) {
-                case PRVNI:
-                    seznamAut.vlozPrvni(auto);
-                    break;
-                case POSLEDNI:
-                    seznamAut.vlozPosledni(auto);
-                    break;
-                case PREDCHUDCE:
-                    seznamAut.vlozPredchudce(auto);
-                    break;
-                case NASLEDNIK:
-                    seznamAut.vlozNaslednika(auto);
-                    break;
-                case AKTUALNI: {
-                    try {
-                        throw new Exception("Auto nelze vložit na aktuální místo");
-                    } catch (Exception ex) {
-                        Logger.getLogger(Pobocka.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                break;
-            }
-            pocetAutVSeznamu++;
-        }
+    public void vlozAuto(Auto auto) {   
+        seznamAut.vloz(auto.getSpz(), auto);
+        pocetAutVSeznamu++;
     }
+    
 
     @Override
-    public Auto zpristupnAuto(EnumPozice Pozice) {
+    public Auto zpristupnAuto() {
         Auto auto = null;
-        switch (Pozice) {
-            case PRVNI:
-                auto = seznamAut.zpristupniPrvni();
-                break;
-            case POSLEDNI:
-                auto = seznamAut.zpristupniPosledni();
-                break;
-            case PREDCHUDCE:
-                auto = seznamAut.zpristupniPredchudce();
-                break;
-            case NASLEDNIK:
-                auto = seznamAut.zpristupniNaslednika();
-                break;
-            case AKTUALNI:
-                auto = seznamAut.zpristupniAktualni();
-                break;
-        }
+        //auto = seznamAut.
         return auto;
     }
 
     @Override
-    public Auto odeberAuto(EnumPozice Pozice) {
+    public Auto odeberAuto() {
         Auto auto = null;
-        switch (Pozice) {
-            case PRVNI:
-                auto = seznamAut.odeberPrvni();
-                break;
-            case POSLEDNI:
-                auto = seznamAut.odeberPosledni();
-                break;
-            case PREDCHUDCE:
-                auto = seznamAut.odeberPredchudce();
-                break;
-            case NASLEDNIK:
-                auto = seznamAut.odeberNaslednika();
-                break;
-            case AKTUALNI:
-                auto = seznamAut.odeberAktualni();
-                break;
-        }
+        //
         pocetAutVSeznamu--;
         return auto;
     }
 
     @Override
     public Iterator iterator() {
-        return seznamAut.iterator();
+        return seznamAut.vytvorIterator(eTypProhl.HLOUBKA);
     }
 
     @Override

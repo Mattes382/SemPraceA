@@ -126,7 +126,7 @@ public class OsobniAutoDialog {
 
         result.ifPresent(vysledek -> {
             
-            ap.vlozAuto(new OsobniAuto(vysledek.hmotnost, vysledek.spz, vysledek.stavKm, vysledek.pocetVypujceni, vysledek.barva), EnumPozice.NASLEDNIK);
+            ap.vlozAuto(new OsobniAuto(vysledek.hmotnost, vysledek.spz, vysledek.stavKm, vysledek.pocetVypujceni, vysledek.barva));
             
         });
        

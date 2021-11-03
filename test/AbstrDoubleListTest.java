@@ -1,5 +1,5 @@
 
-import AbstrDoubleList.AbstrDoubleList;
+import struktury.AbstrDoubleList;
 import Entity.Autopujcovna;
 import Entity.Pobocka;
 import generator.Generator;

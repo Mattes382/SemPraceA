@@ -13,11 +13,11 @@ import java.util.Iterator;
  */
 public interface IPobocka{
 
-    void vlozAuto(Auto auto, EnumPozice Pozice);// - vloží nové auto do seznamu na příslušnou pozici (první, poslední, předchůdce, následník)
+    void vlozAuto(Auto auto);// - vloží nové auto do seznamu na příslušnou pozici (první, poslední, předchůdce, následník)
 
-    Auto zpristupnAuto(EnumPozice Pozice);// - zpřístupní auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    Auto zpristupnAuto();// - zpřístupní auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
 
-    Auto odeberAuto(EnumPozice Pozice);// - odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    Auto odeberAuto();// - odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
 
     Iterator iterator();//-vytvoří iterátor
 
