@@ -30,10 +30,15 @@ public interface IAutopujcovna{
 
     /*  - vloží nové auto do 
     seznamu aktuální pobočky na příslušnou pozici (první, poslední, předchůdce, následník)*/
-    Auto zpristupnAuto(); // - zpřístupní auto z požadované 
-
-    /*pozice aktuální pobočky (první, poslední, předchůdce, následník, aktuální),*/
-    Auto odeberAuto();//- odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    Auto zpristupnAuto(); // - nyni zpristupni aktualni hledane auto namisto z prislusne pozice
+    
+    Auto odeberAutoPodleKlice(String spz); //odebere auto podle klice
+    
+    Auto odeberAuto();//- odebere hledane auto
+    
+    Auto hledejAuto(String spz); //hleda auto ve vsech pobockach podle klice
+    
+    Auto hledejAutoVPobocce(String spz); //hleda auto v aktualni pobocce
 
     Auto vypujcAuto();/* - odebere auto z požadované pozice aktuální pobočky a vloží ho do seznamu výpůjček (první, poslední, předchůdce, 
     následník, aktuální),*/

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import struktury.AbstrTable;
+import struktury.eTypProhl;
 
 /**
  *
@@ -25,6 +26,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
     private Auto hledaneAuto = null;
     private int pocetPujcovenVSeznamu;
     private int pocetVypujcenychAut;
+    private eTypProhl typProhledavni = eTypProhl.HLOUBKA;
 
     public Autopujcovna(AbstrDoubleList<Pobocka> pobocky, AbstrDoubleList<Auto> vypujcenaAuta) {
         this.pobocky = pobocky;
@@ -71,6 +73,10 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
 
     public void setPocetPujcovenVSeznamu(int pocetPujcovenVSeznamu) {
         this.pocetPujcovenVSeznamu = pocetPujcovenVSeznamu;
+    }
+
+    public void setTypProhledavni(eTypProhl typProhledavni) {
+        this.typProhledavni = typProhledavni;
     }
 
     @Override
@@ -158,12 +164,10 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         }
 
     }
-// tohle vsechno nejak prenyst do pobocky aby to davalo smysl a nebylo to napatlany v autopujcovne
 
+    @Override
     public Auto hledejAutoVPobocce(String spz) {
-        Pobocka akt = pobocky.zpristupniAktualni();
-        AbstrTable<String, Auto> seznamAut = akt.getSeznamAut();
-        Auto tmp = seznamAut.najdi(spz);
+        Auto tmp = pobocky.zpristupniAktualni().hledejAuto(spz);
         if (tmp != null) {
             this.hledaneAuto = tmp;
             return hledaneAuto;
@@ -172,6 +176,7 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         }
     }
 
+    @Override
     public Auto hledejAuto(String spz) {
         Iterator<Pobocka> it = pobocky.iterator();
         Pobocka tmpPobocka = pobocky.zpristupniAktualni();
@@ -197,12 +202,13 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         }
         return null;
     }
-    
-    public Auto odeberAutoPodleKlice(String spz){
+
+    @Override
+    public Auto odeberAutoPodleKlice(String spz) {
         Auto auto = hledejAuto(spz);
-        if(auto != null){
-           odeberAuto();
-           return auto;
+        if (auto != null) {
+            odeberAuto();
+            return auto;
         } else {
             return null;
         }
@@ -217,16 +223,14 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
     @Override
     public Auto odeberAuto() { // odebere vybrane auto
         Auto auto = null;
-        Pobocka akt = pobocky.zpristupniAktualni();
-        AbstrTable<String, Auto> seznamAut = akt.getSeznamAut();
-        auto = seznamAut.odeber(hledaneAuto.getSpz());
+        auto = pobocky.zpristupniAktualni().odeberAuto(hledaneAuto);
         return auto;
     }
 
     @Override
     public Auto vypujcAuto() {
         Auto auto = hledaneAuto;
-        pobocky.zpristupniAktualni().odeberAuto(); // presne o tomhle mluvim
+        odeberAuto();
         vypujcenaAuta.vlozPrvni(auto);
         pocetVypujcenychAut++;
         return auto;
@@ -288,7 +292,8 @@ public class Autopujcovna implements IAutopujcovna, Serializable {
         switch (typ) {
             case AUTA:
                 if (pobocky.zpristupniAktualni() != null) {
-                    iterator = pobocky.zpristupniAktualni().iterator();
+                    System.out.println(typProhledavni);
+                    iterator = pobocky.zpristupniAktualni().iterator(typProhledavni);
                 }
                 break;
             case POBOCKY:

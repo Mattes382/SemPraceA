@@ -6,6 +6,7 @@
 package Entity;
 
 import java.util.Iterator;
+import struktury.eTypProhl;
 
 /**
  *
@@ -15,11 +16,13 @@ public interface IPobocka{
 
     void vlozAuto(Auto auto);// - vloží nové auto do seznamu na příslušnou pozici (první, poslední, předchůdce, následník)
 
-    Auto zpristupnAuto();// - zpřístupní auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    //Auto zpristupnAuto();// - zpřístupní auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
 
-    Auto odeberAuto();// - odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
+    Auto odeberAuto(Auto auto);// - odebere auto z požadované pozice (první, poslední, předchůdce, následník, aktuální),
 
-    Iterator iterator();//-vytvoří iterátor
+    Iterator iterator(eTypProhl typProhledavani);//-vytvoří iterátor s moznosti prohledavat do hloubky nebo sirky
+    
+    Auto hledejAuto(String spz); // vyhleda auto v pobocce
 
     void zrus(); //– zruší všechny auta.
 }

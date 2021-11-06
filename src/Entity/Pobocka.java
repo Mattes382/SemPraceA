@@ -18,7 +18,7 @@ import struktury.eTypProhl;
  *
  * @author Matej
  */
-public class Pobocka implements IPobocka, Serializable{
+public class Pobocka implements IPobocka, Serializable {
 
     private String jmenoPobocky;
     private AbstrTable<String, Auto> seznamAut = new AbstrTable<>();
@@ -56,30 +56,35 @@ public class Pobocka implements IPobocka, Serializable{
     }
 
     @Override
-    public void vlozAuto(Auto auto) {   
+    public void vlozAuto(Auto auto) {
         seznamAut.vloz(auto.getSpz(), auto);
         pocetAutVSeznamu++;
     }
-    
+
 
     @Override
-    public Auto zpristupnAuto() {
-        Auto auto = null;
-        //auto = seznamAut.
-        return auto;
+    public Auto hledejAuto(String spz) {
+        Auto hledaneAuto = null;
+        AbstrTable<String, Auto> seznamAut = this.getSeznamAut();
+        Auto tmp = seznamAut.najdi(spz);
+        if (tmp != null) {
+            hledaneAuto = tmp;
+        }
+        return hledaneAuto;
     }
 
     @Override
-    public Auto odeberAuto() {
+    public Auto odeberAuto(Auto hledaneAuto) {
         Auto auto = null;
-        //
+        AbstrTable<String, Auto> seznamAut = this.getSeznamAut();
+        auto = seznamAut.odeber(hledaneAuto.getSpz());
         pocetAutVSeznamu--;
         return auto;
     }
 
     @Override
-    public Iterator iterator() {
-        return seznamAut.vytvorIterator(eTypProhl.HLOUBKA);
+    public Iterator iterator(eTypProhl typProhledavani) {
+        return seznamAut.vytvorIterator(typProhledavani); //musi se umet prepinat
     }
 
     @Override
@@ -93,5 +98,4 @@ public class Pobocka implements IPobocka, Serializable{
         return "Pobocka{" + "jmenoPobocky=" + jmenoPobocky + ", pocetAutVSeznamu=" + pocetAutVSeznamu + '}';
     }
 
-    
 }

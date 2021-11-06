@@ -29,9 +29,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseEvent;
 import perzistence.Perzistence;
 import struktury.AbstrTable;
 import struktury.eTypProhl;
@@ -52,12 +54,16 @@ public class FXMLController implements Initializable {
     private ListView<Auto> listVypujcenychAut;
     @FXML
     private TextField vyhledavaciTextField;
+    @FXML
+    private ComboBox typProhledavani;
 
     private final ObservableList<IPobocka> pobockyObsList;
     private final ObservableList<Auto> autaObsList;
     private final ObservableList<Auto> vypAutaObsList;
     private TextInputDialog dialog = new TextInputDialog();
     private ChoiceDialog<String> choice = new ChoiceDialog<>("Osobní auto", "Osobní auto", "Užitkové auto");
+    private ChoiceDialog<String> choicePozice = new ChoiceDialog<>("První", "První", "Předchozí", "Aktuální", "Další", "Poslední");
+    private ChoiceDialog<String> choicePoziceVloz = new ChoiceDialog<>("První", "První", "Předchozí", "Další", "Poslední");
     private Optional<String> result;
 
     Autopujcovna autopujcovna = new Autopujcovna();
@@ -74,7 +80,8 @@ public class FXMLController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        typProhledavani.getItems().addAll("HLOUBKA", "ŠÍŘKA");
+        typProhledavani.getSelectionModel().select("HLOUBKA");
     }
 
     private void obnovitListy() {
@@ -115,7 +122,7 @@ public class FXMLController implements Initializable {
     }
 
     private void setSelectedAuta() {
-        Auto aktualni = autopujcovna.zpristupnAuto(); // doopravit
+        Auto aktualni = autopujcovna.zpristupnAuto();
         if (aktualni != null) {
             listAut.getSelectionModel().select(aktualni);
         }
@@ -131,9 +138,7 @@ public class FXMLController implements Initializable {
     private void zobrazit() {
         if (!autopujcovna.getPobocky().jePrazdny()) {
             listAut.getItems().clear();
-            Pobocka aktualniPob = autopujcovna.getPobocky().zpristupniAktualni();
-
-            Iterator<Auto> it = aktualniPob.iterator();
+            Iterator<Auto> it = autopujcovna.iterator(eTyp.AUTA);
 
             while (it.hasNext()) {
                 listAut.getItems().add(it.next());
@@ -207,8 +212,13 @@ public class FXMLController implements Initializable {
         alert.setTitle("Chyba");
         if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
             if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
-                autopujcovna.vypujcAuto();
-                obnovitListy();
+                if (autopujcovna.zpristupnAuto() != null) {
+                    autopujcovna.vypujcAuto();
+                    obnovitListy();
+                } else {
+                    alert.setContentText("Pobočka nemá vybraný prvek!");
+                    alert.showAndWait();
+                }
             } else {
                 alert.setContentText("Pobočka nemá žádné auta!");
                 alert.showAndWait();
@@ -222,10 +232,34 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void vratAuto(ActionEvent event) {
-
         if (autopujcovna.getPocetVypujcenychAut() != 0) {
-            autopujcovna.vratAuto(EnumPozice.AKTUALNI);
-            obnovitListy();
+            choicePozice.setTitle("Výběr pozice");
+            choicePozice.setContentText("Vyberte pozici vráceného auta:");
+
+            Optional<String> pozice = choicePozice.showAndWait();
+            pozice.ifPresent((t) -> {
+                switch (t) {
+
+                    case "První":
+                        autopujcovna.vratAuto(EnumPozice.PRVNI);
+                        break;
+                    case "Předchozí":
+                        autopujcovna.vratAuto(EnumPozice.PREDCHUDCE);
+                        break;
+                    case "Aktuální":
+                        autopujcovna.vratAuto(EnumPozice.AKTUALNI);
+                        break;
+                    case "Další":
+                        autopujcovna.vratAuto(EnumPozice.NASLEDNIK);
+                        break;
+                    case "Poslední":
+                        autopujcovna.vratAuto(EnumPozice.POSLEDNI);
+                        break;
+
+                }
+
+                obnovitListy();
+            });
         }
 
     }
@@ -236,8 +270,14 @@ public class FXMLController implements Initializable {
         alert.setTitle("Chyba");
         if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
             if (autopujcovna.getPobocky().zpristupniAktualni().getPocetAutVSeznamu() != 0) {
-                autopujcovna.odeberAuto();
-                obnovitListy();
+                if (autopujcovna.zpristupnAuto() != null) {
+                    autopujcovna.odeberAuto();
+                    obnovitListy();
+                } else {
+                    alert.setContentText("Pobočka nemá vybrané auto!");
+                    alert.showAndWait();
+                }
+
             } else {
 
                 alert.setContentText("Pobočka nemá žádné auta!");
@@ -277,31 +317,77 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void vlozPobocku(ActionEvent event) {
-        dialog.setHeaderText("Zadejte jméno pobočky");
-        result = dialog.showAndWait();
-        result.ifPresent(jmenoPobocky -> {
-            if (!jmenoPobocky.isEmpty()) {
-                Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrTable<String, Auto>());
-                autopujcovna.vlozPobocku(pobocka, EnumPozice.POSLEDNI);
-                obnovitListy();
-            }
+        choicePoziceVloz.setTitle("Výběr pozice");
+        choicePoziceVloz.setContentText("Vyberte pozici vložení:");
 
+        Optional<String> pozice = choicePoziceVloz.showAndWait();
+
+        pozice.ifPresent(pozicePolozky -> {
+            dialog.setHeaderText("Zadejte jméno pobočky");
+            result = dialog.showAndWait();
+            result.ifPresent(jmenoPobocky -> {
+                if (!jmenoPobocky.isEmpty()) {
+                    Pobocka pobocka = new Pobocka(jmenoPobocky, new AbstrTable<String, Auto>());
+                    switch (pozicePolozky) {
+                        case "První":
+                            autopujcovna.vlozPobocku(pobocka, EnumPozice.PRVNI);
+                            break;
+                        case "Předchozí":
+                            autopujcovna.vlozPobocku(pobocka, EnumPozice.PREDCHUDCE);
+                            break;
+                        case "Další":
+                            autopujcovna.vlozPobocku(pobocka, EnumPozice.NASLEDNIK);
+                            break;
+                        case "Poslední":
+                            autopujcovna.vlozPobocku(pobocka, EnumPozice.POSLEDNI);
+                            break;
+                    }
+
+                    obnovitListy();
+                }
+
+            });
         });
+
     }
 
     @FXML
     private void odeberPobocku(ActionEvent event) {
-        if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
-            autopujcovna.odeberPobocku(EnumPozice.AKTUALNI);
-            obnovitListy();
-        } else {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Chyba");
-            alert.setContentText("Autopůjčovna nemá žádně pobočky!");
+        choicePozice.setTitle("Výběr pozice");
+        choicePozice.setContentText("Vyberte pozici odebrání:");
 
-            alert.showAndWait();
-        }
+        Optional<String> pozice = choicePozice.showAndWait();
 
+        pozice.ifPresent(pozicePolozky -> {
+            if (autopujcovna.getPocetPujcovenVSeznamu() != 0) {
+                switch (pozicePolozky) {
+                    case "První":
+                        autopujcovna.odeberPobocku(EnumPozice.PRVNI);
+                        break;
+                    case "Předchozí":
+                        autopujcovna.odeberPobocku(EnumPozice.PREDCHUDCE);
+                        break;
+                    case "Aktuální":
+                        autopujcovna.odeberPobocku(EnumPozice.AKTUALNI);
+                        break;
+                    case "Další":
+                        autopujcovna.odeberPobocku(EnumPozice.NASLEDNIK);
+                        break;
+                    case "Poslední":
+                        autopujcovna.odeberPobocku(EnumPozice.POSLEDNI);
+                        break;
+
+                }
+
+                obnovitListy();
+            } else {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Chyba");
+                alert.setContentText("Autopůjčovna nemá žádně pobočky!");
+
+                alert.showAndWait();
+            }
+        });
     }
 
     @FXML
@@ -374,24 +460,24 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void hledatVPobocce(ActionEvent event) {
-        if(autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) != null){
-        Auto hledaneAuto = autopujcovna.hledejAutoVPobocce(vyhledavaciTextField.getText());
+        if (autopujcovna.zpristupniPobocku(EnumPozice.AKTUALNI) != null) {
+            Auto hledaneAuto = autopujcovna.hledejAutoVPobocce(vyhledavaciTextField.getText());
 
-        if (hledaneAuto == null) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Hledání auta v pobočce");
-            alert.setContentText("Auto nebylo nalezeno...");
+            if (hledaneAuto == null) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Hledání auta v pobočce");
+                alert.setContentText("Auto nebylo nalezeno...");
 
-            alert.showAndWait();
-        }
+                alert.showAndWait();
+            }
 
-        setSelectedAuta();
+            setSelectedAuta();
         }
     }
 
     @FXML
     private void odeberAutoKlic(ActionEvent event) {
-                Auto hledaneAuto = autopujcovna.odeberAutoPodleKlice(vyhledavaciTextField.getText());
+        Auto hledaneAuto = autopujcovna.odeberAutoPodleKlice(vyhledavaciTextField.getText());
 
         if (hledaneAuto == null) {
             Alert alert = new Alert(AlertType.WARNING);
@@ -401,8 +487,20 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
 
-        setSelected();
-        setSelectedAuta();
+        obnovitListy();
     }
 
+    @FXML
+    private void selectTypProhledavani(ActionEvent event) {
+        if (typProhledavani.getValue().toString().equals("HLOUBKA")) {
+            autopujcovna.setTypProhledavni(eTypProhl.HLOUBKA);
+        } else {
+            autopujcovna.setTypProhledavni(eTypProhl.SIRKA);
+        }
+    }
+
+    @FXML
+    private void selectItem(MouseEvent event) {
+        vyhledavaciTextField.setText(listAut.getSelectionModel().getSelectedItem().getSpz());
+    }
 }

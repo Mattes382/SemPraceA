@@ -29,26 +29,26 @@ public class AbstrDoubleListTest {
         return pole;
     }
             
-   @Test
-    public void testVlozZaAktualnim10() throws Exception{
-
-        Autopujcovna instance = Generator.vytvorNahodnouAutoPujcovnu(10);
-        Pobocka[] pole = dejPole(instance.getPobocky());
-           for (int i = 0; i < pole.length; i++) {
-               System.out.println(pole[i]);
-           }
-        System.out.println(instance.getPocetVypujcenychAut());
-       Perzistence.uloz("kocourek.bin", instance);
-       System.out.println("soubor ulozen");
-       Autopujcovna instance2;
-       
-       instance2 = Perzistence.nacti("kocourek.bin");
-       System.out.println("seznam nacten");
-       Pobocka[] pole2 = dejPole(instance2.getPobocky());
-           for (int i = 0; i < pole2.length; i++) {
-               System.out.println(pole2[i]);
-           }
-       System.out.println(instance2.getVypujcenaAuta().pocetPrvku());    
-    }
+//   @Test
+//    public void testVlozZaAktualnim10() throws Exception{
+//
+//        Autopujcovna instance = Generator.vytvorNahodnouAutoPujcovnu(10);
+//        Pobocka[] pole = dejPole(instance.getPobocky());
+//           for (int i = 0; i < pole.length; i++) {
+//               System.out.println(pole[i]);
+//           }
+//        System.out.println(instance.getPocetVypujcenychAut());
+//       Perzistence.uloz("kocourek.bin", instance);
+//       System.out.println("soubor ulozen");
+//       Autopujcovna instance2;
+//       
+//       instance2 = Perzistence.nacti("kocourek.bin");
+//       System.out.println("seznam nacten");
+//       Pobocka[] pole2 = dejPole(instance2.getPobocky());
+//           for (int i = 0; i < pole2.length; i++) {
+//               System.out.println(pole2[i]);
+//           }
+//       System.out.println(instance2.getVypujcenaAuta().pocetPrvku());    
+//    }
 
 }

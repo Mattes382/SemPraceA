@@ -5,17 +5,18 @@
  */
 package struktury;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  *
  * @author Matej
  */
-public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V> {
+public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>, Serializable {
 
     private Prvek root;
 
-    private class Prvek {
+    private class Prvek implements Serializable {
 
         Prvek levy;
         Prvek pravy;
@@ -43,7 +44,7 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
     }
 
     @Override
-    public void vloz(K key, V value){
+    public void vloz(K key, V value) {
         //duplikat - najdi
         V val = najdi(key);
         if (val == null) {
@@ -51,48 +52,43 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
                 Prvek r = new Prvek(null, null, null, value, key);
                 root = r;
             } else {
-                Prvek pom = root;
+                Prvek tmp = root;
                 while (true) {
                     //vkladany Prvek je vetsi
-                    if (pom.klic.compareTo(key) < 0) {
-                        if (pom.pravy == null) {
-                            Prvek p = new Prvek(null, null, pom, value, key);
-                            pom.pravy = p;
+                    if (tmp.klic.compareTo(key) < 0) {
+                        if (tmp.pravy == null) {
+                            Prvek p = new Prvek(null, null, tmp, value, key);
+                            tmp.pravy = p;
                             return;
                         }
-                        pom = pom.pravy;
+                        tmp = tmp.pravy;
                         //vkladany Prvek je mensi
-                    } else if (pom.klic.compareTo(key) > 0) {
-                        if (pom.levy == null) {
-                            Prvek l = new Prvek(null, null, pom, value, key);
-                            pom.levy = l;
+                    } else if (tmp.klic.compareTo(key) > 0) {
+                        if (tmp.levy == null) {
+                            Prvek l = new Prvek(null, null, tmp, value, key);
+                            tmp.levy = l;
                             return;
                         }
-                        pom = pom.levy;
+                        tmp = tmp.levy;
                     }
                 }
             }
-        } else {
-            System.out.println(val);
-            //prvek je stejny
-//           throw new Exception("Nemuzes vlozit stejny prvek");
         }
     }
 
     @Override
     public V najdi(K key) {
 
-        Prvek pom = root;
-        while (pom != null) {
-            if (pom.klic.compareTo(key) == 0) {
-                return pom.data;
-                //hledany prvek je mensi nez pom
-            } else if (pom.klic.compareTo(key) > 0) {
-                pom = pom.levy;
-            } else if (pom.klic.compareTo(key) < 0) {
-                pom = pom.pravy;
+        Prvek tmp = root;
+        while (tmp != null) {
+            if (tmp.klic.compareTo(key) == 0) {
+                return tmp.data;
+            } else if (tmp.klic.compareTo(key) > 0) {
+                tmp = tmp.levy;
+            } else if (tmp.klic.compareTo(key) < 0) {
+                tmp = tmp.pravy;
             }
-            
+
         }
         return null;
     }
@@ -109,7 +105,7 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
             throw new NullPointerException("Odebirany prvek neni ve stromu");
         }
         Prvek deletePrvek = root;
-        //hledam prvek
+
         while (deletePrvek.klic.compareTo(key) != 0) {
             if (deletePrvek.klic.compareTo(key) > 0) {
                 deletePrvek = deletePrvek.levy;
@@ -118,7 +114,7 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
             }
         }
         V data = deletePrvek.data;
-        //Prvek jsem nasel
+
         //Pokud nema zadne potomky  
         if (deletePrvek.levy == null && deletePrvek.pravy == null) {
             //pokud pom ma rodice
@@ -234,7 +230,7 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
                         deletePrvek.rodic.levy = newPrvek;
                     }
                     newPrvek.rodic = deletePrvek.rodic;
-                    //pokud nema rodice nastv root
+                    //pokud nema rodice nastveny root
                 } else {
                     //pokud ma rodice
                     root = newPrvek;
@@ -263,23 +259,22 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
         if (typ == eTypProhl.HLOUBKA) {
             return new Iterator<V>() {
                 IAbstrLIFO<Prvek> zasobnik = new AbstrLIFO();
-                Prvek pom = root;
+                Prvek tmp = root;
 
                 @Override
                 public boolean hasNext() {
-                    //test na prazdnost a 
-                    return !zasobnik.jePrazdny() || pom != null;
+                    return !zasobnik.jePrazdny() || tmp != null;
                 }
 
                 @Override
                 public V next() {
-                    while (pom != null) {
-                        zasobnik.vloz(pom);
-                        pom = pom.levy;
+                    while (tmp != null) {
+                        zasobnik.vloz(tmp);
+                        tmp = tmp.levy;
                     }
                     Prvek odPrvek = zasobnik.odeber();
                     //Jdu do prave vetve
-                    pom = odPrvek.pravy;
+                    tmp = odPrvek.pravy;
                     return odPrvek.data;
                 }
             };
@@ -300,14 +295,14 @@ public class AbstrTable<K extends Comparable<K>, V> implements IAbstrTable<K, V>
                 @Override
                 public V next() {
 
-                    Prvek pom = fronta.odeber();
-                    V retdata = pom.data;
+                    Prvek tmp = fronta.odeber();
+                    V retdata = tmp.data;
 
-                    if (pom.levy != null) {
-                        fronta.vloz(pom.levy);
+                    if (tmp.levy != null) {
+                        fronta.vloz(tmp.levy);
                     }
-                    if (pom.pravy != null) {
-                        fronta.vloz(pom.pravy);
+                    if (tmp.pravy != null) {
+                        fronta.vloz(tmp.pravy);
                     }
                     return retdata;
                 }

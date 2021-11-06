@@ -283,7 +283,7 @@ public class AbstrDoubleList<T> implements IAbstrDoubleList<T>, Serializable {
 
     @Override
     public T odeberPredchudce() {
-        if (!jePrazdny()) {
+        if (!jePrazdny() && aktualni.predchozi != null) {
             T tmpData;
 
             if (aktualni.predchozi.equals(prvni)) {
